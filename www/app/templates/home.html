@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Quick Response Code Service") }}{% endblock %}
+
+{% block main %}
+
+    <header class="header">
+        <div class="header-container">
+            <div class="social-wrap">
+                <div class="header-round-button social-button">
+                    <div class="social-button-bg-gp"></div>
+                    <div class="google-plus" onclick="gkMain.onGoogleShareClick()"></div>
+                </div>
+                <div class="header-round-button social-button">
+                    <div class="social-button-bg-fb"></div>
+                    <div class="facebook" onclick="gkMain.onFacebookShareClick()"></div>
+                </div>
+            </div>
+
+            <ul class="header-menu">
+                <a href="#scan"><li class="header-button">{{ _("Scan") }}</li><a/>
+                <a href="#url"><li class="header-button">{{ _("URL") }}</li><a/>
+                <a href="#create"><li class="header-button">{{ _("Create") }}</li><a/>
+                <a href="#about"><li class="header-button">{{ _("About") }}</li><a/>
+                <a href="#contact"><li class="header-button">{{ _("Contact") }}</li><a/>
+            </ul>
+        </div>
+    </header>
+
+    {#
+<section class="module parallax parallax-1">
+  <div class="container">
+    <h1>
+      {{ _("Scan") }}
+    </h1>
+    <div class="see-farther-wrap">
+      <a href="#leave-request" style="padding-right: 55px;"><div class="see-farther">&#xf091;</div></a>
+    </div>
+  </div>
+</section>
+#}
+
+    <section class="module content scan">
+        <div class="container">
+            <h2 id="scan">{{ _("Scan") }}</h2>
+            <p>
+                <input id="scan-input" type="file" accept="image/*" capture="camera"/>
+            </p>
+            <p>
+                <img id="scan-preview" class="src-preview"/>
+            </p>
+            <p id="scan-result"></p>
+        </div>
+    </section>
+
+    <section class="module content url">
+        <div class="container">
+            <h2 id="url">{{ _("URL") }}</h2>
+
+            <p>
+                <input id="url-input" type="url"/>
+                <img id="url-spinner" src="{{ url_for('static', filename='css/img/spinner.gif') }}" class="spinner"/>
+            </p>
+            <p>
+                <img id="url-preview" class="src-preview"/>
+            </p>
+            <p id="url-result"></p>
+        </div>
+    </section>
+
+    <section class="module content create">
+        <div class="container">
+            <h2 id="create">{{ _("Create") }}</h2>
+
+            <p>
+                <input id="new-input" type="text"/>
+            </p>
+            <p>
+                <div id="new-qrcode"></div>
+            </p>
+        </div>
+    </section>
+
+    <section class="module content">
+        <div class="container">
+            <h2 id="about">{{ _("About") }}</h2>
+
+            <p>
+                This site provides a QR Code scanner directly in the browser, implemented in JavaScript.
+                Use your mobile device camera or choose a file.
+            </p>
+            <p>
+                If you like this site please consider leave it via social buttons on top of the page. Or use share buttons.
+            </p>
+            <p>
+                If you have any suggestions or whatever feel free to use the form below to contact me.
+            </p>
+        </div>
+    </section>
+
+    <section class="module content contact">
+        <div class="container">
+            <h2 id="contact">{{ _("Contact") }}</h2>
+
+            <div class="paragraph">
+                <form id="contact-form" action="contact/" method="post">
+                    <div class="name-mail">
+                        <input name="name" type="text" placeholder="{{ _("Name") }}" required/>
+                        <input name="email_address" type="email" placeholder="{{ _("E-mail") }}" required/>
+                    </div>
+                    <textarea name="message" placeholder="{{ _("Message") }}" required></textarea>
+                    <button type="submit">{{ _("Send") }}</button>
+                </form>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <span class="copyright">&copy;2017 qr4u.org</span>
+                <ul>
+                    <a href="#scan"><li>{{ _("Scan") }}</li></a>
+                    <a href="#url"><li>{{ _("URL") }}</li></a>
+                    <a href="#create"><li>{{ _("Create") }}</li></a>
+                    <a href="#about"><li>{{ _("About") }}</li><a/>
+                    <a href="#contact"><li>{{ _("Contact") }}</li><a/>
+                </ul>
+            </div>
+        </footer>
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+    <script defer src="{{ url_for('static', filename='js/lib/alertify.min.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/lib/opentip-jquery.min.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/lib/mobile-detect.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jquery.magnific-popup.js') }}"></script>
+
+    <script>
+        var main = {
+            onGoogleShareClick: function ()
+            {
+                window.open('https://plus.google.com/share?url=http://example.com',
+                        undefined, 'width=600,height=400');
+            },
+
+            onFacebookShareClick: function ()
+            {
+                window.open('http://www.facebook.com/sharer/sharer.php?u=http://example.com',
+                        undefined, 'width=600,height=400');
+            }
+        };
+
+        function createQrCode(text)
+        {
+            var qrcode = new QRCode($('#new-qrcode').get(0), {
+                text: text,
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        $(function ()
+        {
+            var md = new MobileDetect(window.navigator.userAgent);
+
+            if (md.mobile())
+            {
+                $("section.module.parallax").css("background-attachment", "scroll");
+            }
+        })
+
+        $(function ()
+        {
+            var $scanInput = $('#scan-input');
+            var $scanPreview = $('#scan-preview');
+            $scanPreview.on('load', function() {
+                var qr = new QCodeDecoder();
+                qr.decodeFromImage($scanPreview.get(0), function (err, result) {
+                  if (err) {
+                      $('#scan-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(err.toString()));
+                  } else {
+                      $('#scan-result').text(result);
+                  }
+                });
+            });
+
+            $scanInput.change(function (e)
+            {
+                var input = $scanInput.get(0);
+                if (input.files && input.files[0])
+                {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $scanPreview.attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                } else
+                {
+                    $scanPreview.attr('src', null);
+                    $('#scan-result').empty();
+                }
+            });
+
+            var $urlInput = $('#url-input');
+            var $urlPreview = $('#url-preview');
+            var $urlSpinner = $('#url-spinner');
+
+            $urlPreview.on('load', function() {
+                var qr = new QCodeDecoder();
+                qr.decodeFromImage($urlPreview.get(0), function (err, result) {
+                  if (err) {
+                      $('#url-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(err.toString()));
+                  } else {
+                      $('#url-result').text(result);
+                  }
+                });
+            });
+
+            $urlInput.change(function(e) {
+                if (!e.target.value)
+                {
+                    $('#url-result').empty();
+                    $urlPreview.attr('src', null);
+                    $urlSpinner.hide();
+                    return;
+                }
+
+                $urlSpinner.show();
+                $.get('/fetch/?url={0}'.format(e.target.value), function(data, status, xhr) {
+                    $urlPreview.attr('src', data);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    $('#url-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(jqXHR.responseText));
+                }).always(function(){
+                    $urlSpinner.hide();
+                });
+            });
+
+            var $newInput = $('#new-input');
+            $newInput.change(function(e) {
+                $('#new-qrcode').empty();
+                createQrCode(e.target.value);
+            });
+
+            {#    $('input.currency').currencyInput();#}
+
+            $(window).scroll(function (e)
+            {
+                var distanceY = $(window).scrollTop(),
+                        shrinkOn = 0,
+                        $header = $(".header");
+
+                var enabled = distanceY > shrinkOn;
+                $header.toggleClass("smaller", enabled)
+                        .toggleClass("header-fixed", enabled)
+                        .toggleClass("header-transparent", enabled);
+            });
+
+            $('a[href*=#]:not([href=#])').click(function ()
+            {
+                if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') &&
+                        location.hostname == this.hostname)
+                {
+                    var target = $(this.hash);
+                    target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                    if (target.length)
+                    {
+                        $('html,body').animate({
+                            scrollTop: target.offset().top - 80
+                        }, 700);
+                        return false;
+                    }
+                }
+            });
+
+            $("#contact-form").submit(function ()
+            {
+                $.post($(this).attr('action'), $(this).serialize(),
+                        function (data, status, xhr)
+                        {
+                            alertify.success(data);
+                        }).fail(function (xhr, status, error)
+                        {
+                            alertify.error(xhr.responseText);
+                        });
+                return false;
+            });
+        }); // jquery on ready
+    </script>
+{% endblock %}

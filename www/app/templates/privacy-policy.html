@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+<style>
+
+h1 {
+  font-family: Bender;
+  font-size: 32pt;
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  border-bottom-style: dotted;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  border-bottom-width: 1px;
+  padding-bottom: 10px;
+}
+
+p, ul {
+  padding: 0 30px;
+  font-family: OpenSans-Light;
+  font-size: 12pt;
+  color: #545454;
+  line-height: 150%;
+  height: auto;
+}
+
+ul {
+  list-style: none;
+  margin-left: 20px;
+}
+
+li {
+    padding-left: 60px;
+}
+
+html {
+    background-color: white;
+}
+
+.visa {
+    width: 48px;
+    height: 15px;
+    background: url(/static/css/img/visa-logo-small.png) no-repeat;
+    position: absolute;
+    padding: 2px 5px;
+}
+
+.master-card {
+    width: 32px;
+    height: 25px;
+    background: url(/static/css/img/master-card-logo-small.png) no-repeat;
+    position: absolute;
+    padding: 2px 5px;
+}
+
+</style>
+
+</head>
+<body>
+    <h1>Политика конфиденциальности</h1>
+
+    <p>
+        Мы принимаем к оплате пластиковые карты следующих международных платежных систем:
+        <ul>
+            <span class="visa"></span><li>VISA International</li>
+            <span class="master-card"></span> <li>MasterCard</li>
+        </ul>
+    </p>
+
+    <p>
+        Все операции по пластиковым картам осуществляются с помощью электронного платежного шлюза ChronoPay (гиперссылка).
+        Компания ChronoPay специализируется на обеспечении безопасности карточных онлайн-платежей.
+        При осуществлении платежа ChronoPay принимает данные Вашей пластиковой карты, затем эта информация по защищенному
+        каналу связи SSL передается на авторизационный сервер ChronoPay.   Данные Вашей карты передаются только в зашифрованном виде.
+        Для передачи информации ChronoPay использует специальные технологии безопасности карточных онлайн-платежей
+        Verifed by Visa и MasterCard Secure Code. Все операции по Вашей карте осуществляются при полном соблюдении требований
+        VISA International, MasterCard и других платежных систем. Безопасность обработки Интернет-платежей через ChronoPay
+        гарантирована международными сертификатами безопасности PCI DSS.
+    </p>
+
+    <p>
+        Деятельность ChronoPay соответствует требованиям закона «О персональных данных».
+        Все действия с персональными данными плательщиков производятся исключительно на территории Российской федерации.
+        В cоответствии с требованиями международных платежных систем, данные Вашей карты после завершения платежа
+        не сохраняются ни в онлайн-магазине, ни на авторизационном сервере ChronoPay.
+    </p>
+</body>
+</html>
+
