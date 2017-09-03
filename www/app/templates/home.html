@@ -75,18 +75,16 @@
             <p>
                 <input id="new-input" type="text"/>
             </p>
-            <p>
-                <div id="new-qrcode"></div>
-            </p>
+            <div id="new-qrcode"></div>
         </div>
     </section>
 
-    <section class="module content">
+    <section class="module content about">
         <div class="container">
             <h2 id="about">{{ _("About") }}</h2>
 
             <p>
-                This site provides a QR Code scanner directly in the browser, implemented in JavaScript.
+                This site provides a QR Code scanner directly in the browser, implemented in JavaScript.<br>
                 Use your mobile device camera or choose a file.
             </p>
             <p>
@@ -134,7 +132,6 @@
     <script defer src="{{ url_for('static', filename='js/lib/opentip-jquery.min.js') }}"></script>
     <script defer src="{{ url_for('static', filename='js/lib/mobile-detect.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jquery.magnific-popup.js') }}"></script>
-
     <script>
         var main = {
             onGoogleShareClick: function ()
@@ -150,16 +147,17 @@
             }
         };
 
+        function urlify(text)
+        {
+            var urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, function(url) {
+                return '<a target="_blank" href="' + url + '">' + url + '</a>';
+            })
+        }
+
         function createQrCode(text)
         {
-            var qrcode = new QRCode($('#new-qrcode').get(0), {
-                text: text,
-                width: 256,
-                height: 256,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
+            $("#new-qrcode").html('<img src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={0}"/>'.format(encodeURIComponent(text)));
         }
 
         $(function ()
@@ -182,7 +180,7 @@
                   if (err) {
                       $('#scan-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(err.toString()));
                   } else {
-                      $('#scan-result').text(result);
+                      $('#scan-result').html(urlify(result));
                   }
                 });
             });
@@ -215,7 +213,7 @@
                   if (err) {
                       $('#url-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(err.toString()));
                   } else {
-                      $('#url-result').text(result);
+                      $('#url-result').html(urlify(result));
                   }
                 });
             });
@@ -242,7 +240,11 @@
             var $newInput = $('#new-input');
             $newInput.change(function(e) {
                 $('#new-qrcode').empty();
-                createQrCode(e.target.value);
+
+                if (e.target.value)
+                {
+                    createQrCode(e.target.value);
+                }
             });
 
             {#    $('input.currency').currencyInput();#}

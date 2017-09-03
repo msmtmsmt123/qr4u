@@ -4,6 +4,22 @@ html {
 }
 */
 
+section a {
+  color: #0a985b;
+  text-decoration: none;
+
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+section a:hover, section a:active {
+  color: #0dc65b;
+  text-decoration: underline;
+}
+
 /* HEADER AND SECTIONS */
 .container {
   width: 1050px;
@@ -411,7 +427,7 @@ section.module.parallax-1 {
 }
 
 section.module p {
-  padding: 15px 30px 0;
+  padding: 15px 30px 0px;
   font-family: OpenSans-Light;
   font-size: 14pt;
   color: #545454;
@@ -490,16 +506,13 @@ section.module.content select {
 }
 
 
-section.module.content.url input {
+section.module.content.url input,
+section.module.content.create input{
   width: 800px;
 }
 
-
-section.module.content.leave-request select {
-  width: 440px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+section.module.content.about {
+  padding-bottom: 40px;
 }
 
 section.module.content.leave-request input:last-of-type,
