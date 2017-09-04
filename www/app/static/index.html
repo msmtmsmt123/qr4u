@@ -39,11 +39,21 @@
        Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
        For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
   <script src="{{ url_for('static', filename='js/lib/modernizr-2.0.6.min.js') }}"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
   
   {% block head_include %}{% endblock %}
 </head>
 
 <body>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10&appId=102812350460446";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
     <div id="main" role="main">
         {% block main %}{% endblock %}
     </div>
@@ -60,6 +70,7 @@
   <script defer src="{{ url_for('static', filename='js/lib/qcode-decoder.min.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/plugins.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
   <!-- end scripts-->
 
   {% block scripts %}{% endblock %}

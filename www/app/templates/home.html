@@ -7,6 +7,12 @@
     <header class="header">
         <div class="header-container">
             <div class="social-wrap">
+                <div class="fb-like" data-href="http://qr4u.online" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+                <div class="g-plusone" data-size="medium" data-href="http://qr4u.online"></div>
+                <a href="https://twitter.com/share" class="twitter-share-button"
+                   data-url="http://qr4u.online">Tweet</a>
+
+{#
                 <div class="header-round-button social-button">
                     <div class="social-button-bg-gp"></div>
                     <div class="google-plus" onclick="gkMain.onGoogleShareClick()"></div>
@@ -15,6 +21,7 @@
                     <div class="social-button-bg-fb"></div>
                     <div class="facebook" onclick="gkMain.onFacebookShareClick()"></div>
                 </div>
+#}
             </div>
 
             <ul class="header-menu">
@@ -146,6 +153,7 @@
     <script defer src="{{ url_for('static', filename='js/lib/mobile-detect.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jquery.magnific-popup.js') }}"></script>
     <script>
+{#
         var main = {
             onGoogleShareClick: function ()
             {
@@ -159,6 +167,7 @@
                         undefined, 'width=600,height=400');
             }
         };
+#}
 
         function onDragOver(e)
         {

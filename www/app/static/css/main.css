@@ -136,8 +136,8 @@ section a:hover, section a:active {
 }
 
 .social-wrap {
-  /*margin-top: 35px;*/
-  margin-left: 60px;
+  margin-top: 15px;
+  float: right;
 
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
@@ -254,7 +254,6 @@ section a:hover, section a:active {
 
 .header-menu {
   list-style: none;
-  /*margin-top: 35px;*/
   padding: 0;
 
   -webkit-transition: all 0.3s;
@@ -636,4 +635,10 @@ section.module.content.purchase .currency-symbol {
   .see-farther-wrap {
     height: 320px;
   }
+}
+
+/* facebook button v-alignment fix */
+.fb_iframe_widget span
+{
+    vertical-align: baseline !important;
 }
