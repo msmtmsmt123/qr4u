@@ -44,7 +44,7 @@ def get_locale():
     # return "en"
     # uncomment to actually handle locale
 
-    locale = session['locale']
+    locale = session.get('locale', None)
 
     if locale is not None:
         return locale
