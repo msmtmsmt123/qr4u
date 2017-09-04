@@ -1,0 +1,12 @@
+[Unit]
+Description=QR Code Service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/relax/qr4u/www/app/app.py
+WorkingDirectory=/home/relax/qr4u/www/app
+
+[Install]
+WantedBy=multi-user.target
+
