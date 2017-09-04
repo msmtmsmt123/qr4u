@@ -44,7 +44,12 @@
         <div class="container">
             <h2 id="scan">{{ _("Scan") }}</h2>
             <p>
-                <input id="scan-input" type="file" accept="image/*" capture="camera"/>
+                {{ _('Drop QR Code image file to box below or') }}
+            </p>
+            <p>
+                <input id="scan-input" type="file" accept="image/*" capture="camera"
+                       ondragover="onDragOver(event);" ondragleave="onDragLeave(event);"
+                       ondragend="onDragEnd(event);" ondrop="onDragDrop(event);"/>
             </p>
             <p>
                 <img id="scan-preview" class="src-preview"/>
@@ -57,6 +62,9 @@
         <div class="container">
             <h2 id="url">{{ _("URL") }}</h2>
 
+            <p>
+                {{ _('Enter URL to QR Code image file') }}
+            </p>
             <p>
                 <input id="url-input" type="url"/>
                 <img id="url-spinner" src="{{ url_for('static', filename='css/img/spinner.gif') }}" class="spinner"/>
@@ -73,7 +81,11 @@
             <h2 id="create">{{ _("Create") }}</h2>
 
             <p>
+                {{ _('Enter a text to create QR Code image') }}
+            </p>
+            <p>
                 <input id="new-input" type="text"/>
+                <img id="new-spinner" src="{{ url_for('static', filename='css/img/spinner.gif') }}" class="spinner"/>
             </p>
             <div id="new-qrcode"></div>
         </div>
@@ -88,7 +100,8 @@
                 Use your mobile device camera or choose a file.
             </p>
             <p>
-                If you like this site please consider leave it via social buttons on top of the page. Or use share buttons.
+                The service provided free of charge.<br>If you like this site please
+                consider leave your like via social buttons on the top of the page or use share buttons.
             </p>
             <p>
                 If you have any suggestions or whatever feel free to use the form below to contact me.
@@ -147,6 +160,30 @@
             }
         };
 
+        function onDragOver(e)
+        {
+            $('#scan-input').addClass('drag-hover');
+            console.log("Drag over");
+        }
+
+        function onDragLeave(e)
+        {
+            $('#scan-input').removeClass('drag-hover');
+            console.log("Drag leave");
+        }
+
+        function onDragEnd(e)
+        {
+            $('#scan-input').removeClass('drag-hover');
+            console.log("Drag end");
+        }
+
+        function onDragDrop(e)
+        {
+            $('#scan-input').removeClass('drag-hover');
+            console.log("Drag drop");
+        }
+
         function urlify(text)
         {
             var urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -155,9 +192,15 @@
             })
         }
 
+        function onNewQRCodeLoad(e)
+        {
+            $('#new-spinner').hide();
+        }
+
         function createQrCode(text)
         {
-            $("#new-qrcode").html('<img src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={0}"/>'.format(encodeURIComponent(text)));
+            $('#new-spinner').show();
+            $("#new-qrcode").html('<img onload="onNewQRCodeLoad(event);" src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={0}"/>'.format(encodeURIComponent(text)));
         }
 
         $(function ()
@@ -238,8 +281,9 @@
             });
 
             var $newInput = $('#new-input');
+            var $newQRCode = $('#new-qrcode');
             $newInput.change(function(e) {
-                $('#new-qrcode').empty();
+                $newQRCode.empty();
 
                 if (e.target.value)
                 {

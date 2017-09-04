@@ -8,16 +8,8 @@ import base64
 from flask import url_for, request, session, redirect, make_response
 from flask import Flask, render_template, abort, g
 from flask_babel import gettext
-
-from hashlib import md5
-from datetime import datetime
-from werkzeug.utils import secure_filename
-from bson.binary import Binary
-
 from flask_app import flask_app, babel
-from basic import is_get, is_post, allowed_file
 
-import db
 import settings
 import basic
 import sendmail
