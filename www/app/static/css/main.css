@@ -441,7 +441,8 @@ section.module.content.contact {
   background-color: #222;
 }
 
-section.module.content.contact h2 {
+section.module.content.contact h2,
+section.module.content.contact h1 {
   color: white;
 }
 
