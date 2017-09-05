@@ -342,6 +342,7 @@ section.module:last-child {
 }
 
 section.module h2,
+section.module h1,
 #payment-result h1 {
   font-family: Bender;
   font-size: 32pt;

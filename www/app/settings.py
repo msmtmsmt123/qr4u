@@ -18,13 +18,12 @@ EN_LOCALE = "en"
 RU_LOCALE = "ru"
 DEFAULT_LOCALE = EN_LOCALE
 
-SITE_DOMAIN = "qr4u.org"
+SITE_DOMAIN = "qr4u.online"
 NO_REPLY_EMAIL = "noreply@" + SITE_DOMAIN
 
 # those e-mails are used to receive messages from request and contact form
 #CONTACT_EMAIL = "contact@" + SITE_DOMAIN
-CONTACT_EMAIL = "garbagefenix@gmail.com"
-REQUEST_EMAIL = "request@" + SITE_DOMAIN
+CONTACT_EMAIL = "noreply@qr4u.online"
 
 
 
