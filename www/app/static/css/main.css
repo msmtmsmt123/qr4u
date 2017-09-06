@@ -341,9 +341,7 @@ section.module:last-child {
   margin-bottom: 0;
 }
 
-section.module h2,
-section.module h1,
-#payment-result h1 {
+section.module h2 {
   font-family: Bender;
   font-size: 32pt;
   font-weight: bold;
@@ -441,8 +439,7 @@ section.module.content.contact {
   background-color: #222;
 }
 
-section.module.content.contact h2,
-section.module.content.contact h1 {
+section.module.content.contact h2 {
   color: white;
 }
 
