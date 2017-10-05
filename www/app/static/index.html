@@ -18,8 +18,8 @@
 
   <!-- Mobile viewport optimized: j.mp/bplateviewport -->
   <meta name="viewport" content="width=1300">
-  <meta name="keywords" content="qrcode,qr code,scanner,barcode,javascript,quick response code,qr generator,qr code online reader, qr code generator free, qr code reader" />
-  <meta name="description" content="Free QR Code Scanner" />
+  <meta name="keywords" content="qrcode,qr code,scanner,barcode,javascript,quick response code,qr generator,qr code online reader, qr code generator free, qr code reader, multiple files, batch, bunch of files, several files" />
+  <meta name="description" content="Free QR Code Scanner with batch support" />
   <meta name="language" content="English" />
   <meta name="copyright" content="qr4u.online (c) 2017" />
   <meta name="Revisit-After" content="1 Days"/>
@@ -71,6 +71,7 @@
 
   <!-- scripts concatenated and minified via ant build script-->
   <script defer src="{{ url_for('static', filename='js/lib/qcode-decoder.min.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/lib/FileSaver.min.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/plugins.js') }}"></script>
   <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
   <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>

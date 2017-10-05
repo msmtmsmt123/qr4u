@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ _("Quick Response Code Service") }}{% endblock %}
+{% block title %}{{ _("Free QR Code Service") }}{% endblock %}
 
 {% block main %}
 
@@ -14,11 +14,11 @@
             </div>
 
             <ul class="header-menu">
-                <a href="#scan"><li class="header-button">{{ _("Scan") }}</li><a/>
-                <a href="#url"><li class="header-button">{{ _("URL") }}</li><a/>
-                <a href="#create"><li class="header-button">{{ _("Create") }}</li><a/>
-                <a href="#about"><li class="header-button">{{ _("About") }}</li><a/>
-                <a href="#contact"><li class="header-button">{{ _("Contact") }}</li><a/>
+                <a href="#scan"><li class="header-button">{{ _("Scan") }}</li></a>
+                <a href="#url"><li class="header-button">{{ _("URL") }}</li></a>
+                <a href="#create"><li class="header-button">{{ _("Create") }}</li></a>
+                <a href="#about"><li class="header-button">{{ _("About") }}</li></a>
+                <a href="#contact"><li class="header-button">{{ _("Contact") }}</li></a>
             </ul>
         </div>
     </header>
@@ -40,17 +40,22 @@
         <div class="container">
             <h2 id="scan">{{ _("Scan") }}</h2>
             <p>
-                {{ _('Drop QR Code image file to box below or') }}
+                {{ _('Drop QR Code image files to box below or') }}
             </p>
             <p>
-                <input id="scan-input" type="file" accept="image/*" capture="camera"
+                <input id="scan-input" type="file" accept="image/*" capture="camera" multiple="multiple"
                        ondragover="onDragOver(event);" ondragleave="onDragLeave(event);"
                        ondragend="onDragEnd(event);" ondrop="onDragDrop(event);"/>
             </p>
-            <p>
-                <img id="scan-preview" class="src-preview"/>
+            <p id="scan-controls" style="display: none;">
+                <button id="scan-download-csv" style="margin-right: 15px;">{{ _("Download CSV") }}</button>
+                <button id="scan-reset">{{ _("Reset") }}</button>
             </p>
-            <p id="scan-result"></p>
+            <div id="scan-preview-wrap">
+            </div>
+            <div id="scan-result">
+                <ol></ol>
+            </div>
         </div>
     </section>
 
@@ -127,8 +132,8 @@
                     <a href="#scan"><li>{{ _("Scan") }}</li></a>
                     <a href="#url"><li>{{ _("URL") }}</li></a>
                     <a href="#create"><li>{{ _("Create") }}</li></a>
-                    <a href="#about"><li>{{ _("About") }}</li><a/>
-                    <a href="#contact"><li>{{ _("Contact") }}</li><a/>
+                    <a href="#about"><li>{{ _("About") }}</li></a>
+                    <a href="#contact"><li>{{ _("Contact") }}</li></a>
                 </ul>
             </div>
         </footer>
@@ -201,6 +206,74 @@
             $("#new-qrcode").html('<img onload="onNewQRCodeLoad(event);" src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={0}"/>'.format(encodeURIComponent(text)));
         }
 
+        function data2blob(data, isBase64) {
+          var chars = "";
+
+          if (isBase64)
+            chars = atob(data);
+          else
+            chars = data;
+
+          var bytes = new Array(chars.length);
+          for (var i = 0; i < chars.length; i++) {
+            bytes[i] = chars.charCodeAt(i);
+          }
+
+          var blob = new Blob([new Uint8Array(bytes)]);
+          return blob;
+        }
+
+    function copyToClipboard(elem) {
+          // create hidden text element, if it doesn't already exist
+        var targetId = "_hiddenCopyText_";
+        var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+        var origSelectionStart, origSelectionEnd;
+        if (isInput) {
+            // can just use the original source element for the selection and copy
+            target = elem;
+            origSelectionStart = elem.selectionStart;
+            origSelectionEnd = elem.selectionEnd;
+        } else {
+            // must use a temporary form element for the selection and copy
+            target = document.getElementById(targetId);
+            if (!target) {
+                var target = document.createElement("textarea");
+                target.style.position = "absolute";
+                target.style.left = "-9999px";
+                target.style.top = "0";
+                target.id = targetId;
+                document.body.appendChild(target);
+            }
+            target.textContent = elem.textContent;
+        }
+        // select the content
+        var currentFocus = document.activeElement;
+        target.focus();
+        target.setSelectionRange(0, target.value.length);
+
+        // copy the selection
+        var succeed;
+        try {
+              succeed = document.execCommand("copy");
+        } catch(e) {
+            succeed = false;
+        }
+        // restore original focus
+        if (currentFocus && typeof currentFocus.focus === "function") {
+            currentFocus.focus();
+        }
+
+        if (isInput) {
+            // restore prior selection
+            elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+        } else {
+            // clear temporary content
+            target.textContent = "";
+        }
+        return succeed;
+    }
+
+
         $(function ()
         {
             var md = new MobileDetect(window.navigator.userAgent);
@@ -213,30 +286,112 @@
 
         $(function ()
         {
-            var $scanInput = $('#scan-input');
-            var $scanPreview = $('#scan-preview');
-            $scanPreview.on('load', function() {
-                var qr = new QCodeDecoder();
-                qr.decodeFromImage($scanPreview.get(0), function (err, result) {
-                  if (err) {
-                      $('#scan-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(err.toString()));
-                  } else {
-                      $('#scan-result').html(urlify(result));
-                  }
-                });
+            var totalFiles = 0;
+            var $scanPreviewWrap = $('#scan-preview-wrap');
+            var $scanResultList = $('#scan-result ol');
+            var resultList = [];
+
+            $('#scan-reset').click(function() {
+                $scanPreviewWrap.empty();
+                $scanResultList.empty();
+                totalFiles = 0;
+                resultList = [];
+                $('#scan-controls').hide();
+                $('#scan-input').val('');
             });
 
+            $('#scan-download-csv').click(function() {
+                 document.execCommand("copy");
+
+                var csv = '';
+                $.each(resultList, function(i, item) {
+                    csv += '{0},{1}\n'.format(item['file'], item['value']);
+                });
+
+                saveAs(data2blob(csv), "qr4u.online-decoded-result.csv");
+            });
+
+            var $scanInput = $('#scan-input');
             $scanInput.change(function (e)
             {
                 var input = $scanInput.get(0);
-                if (input.files && input.files[0])
+                if (input.files)
                 {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        $scanPreview.attr('src', e.target.result);
-                    }
+                    for (var i = 0; i < input.files.length; ++i)
+                    {
+                        var file = input.files[i];
+                        if (file)
+                        {
+                            totalFiles += 1;
+                            var $item = $('<div class="scan-preview-item" data-num="{0}"><img /><div /></div>'.format(totalFiles));
+                            var reader = new FileReader();
+                            reader.file  = file
+                            reader.$item = $item;
+                            reader.onload = function (e) {
+                                var $item = e.target.$item;
 
-                    reader.readAsDataURL(input.files[0]);
+                                console.log('Reader onload ', e.target.file.name, $item);
+
+                                $item.find('img').attr('src', e.target.result);
+                                $item.find('img').on('load', {file: e.target.file, image: $item},
+                                        function (event)
+                                        {
+                                            console.log('Image onload ', e.target.file.name);
+                                            var qr = new QCodeDecoder();
+                                            qr.decodeFromImage(event.target, function (err, result) {
+                                                $('#scan-controls').show();
+
+                                                var file = event.data.file;
+                                                var $item = event.data.image;
+
+                                                if (file.done) {
+                                                    return;
+                                                }
+
+                                                file.done = true;
+                                                console.log('Ondecode ', file.name, $item);
+
+                                                $scanPreviewWrap.append($item);
+                                                if (err)
+                                                {
+                                                    console.log('Ondecode fail');
+
+                                                    resultList.push({file: file.name, value: 'Decode error'});
+                                                    var errStr = 'Something went wrong: {0}'.format(err.toString());
+                                                    var errHtml = '<span style="color:red;">{0}</span>'.format(errStr);
+                                                    $scanResultList.append('<li>{0}, {1}</li>'.format(file.name, errHtml));
+                                                    $item.find('div').html(
+                                                            '<span>{0}.</span> {1}, {2}'
+                                                            .format($item.attr('data-num'), file.name, errHtml));
+                                                    $item.attr('title', errStr);
+                                                } else
+                                                {
+                                                    console.log('Ondecode ok');
+
+                                                    resultList.push({file: file.name, value: result});
+
+                                                    var renderResult = result.split('<').join('&lt;').split('>').join('&gt;');
+
+                                                    $scanResultList.append('<li>{0}, {1}</li>'.format(file.name, urlify(renderResult)));
+                                                    $item.find('div').html(
+                                                            '<span>{0}.</span> {1}, {2}'
+                                                            .format($item.attr('data-num'), file.name, urlify(renderResult)));
+                                                    $item.attr('title', result);
+                                                }
+                                            });
+                                            event.stopImmediatePropagation();
+                                            event.stopPropagation();
+                                            return false;
+                                        });
+
+                                $item.find('img').on('error', {file: file, item: $item}, function () {
+
+                                });
+                            }
+
+                            reader.readAsDataURL(file);
+                        }
+                    }
                 } else
                 {
                     $scanPreview.attr('src', null);
@@ -252,7 +407,7 @@
                 var qr = new QCodeDecoder();
                 qr.decodeFromImage($urlPreview.get(0), function (err, result) {
                   if (err) {
-                      $('#url-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(err.toString()));
+                      $('#url-result').html('<span style="color:red;">Something went wrong: {0}</span>'.format(err.toString()));
                   } else {
                       $('#url-result').html(urlify(result));
                   }
@@ -272,7 +427,7 @@
                 $.get('/fetch/?url={0}'.format(e.target.value), function(data, status, xhr) {
                     $urlPreview.attr('src', data);
                 }).fail(function(jqXHR, textStatus, errorThrown) {
-                    $('#url-result').html('<span style="color:red;">Something goes wrong: {0}</span>'.format(jqXHR.responseText));
+                    $('#url-result').html('<span style="color:red;">Something went wrong: {0}</span>'.format(jqXHR.responseText));
                 }).always(function(){
                     $urlSpinner.hide();
                 });
