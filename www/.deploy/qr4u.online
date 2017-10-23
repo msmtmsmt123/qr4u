@@ -6,7 +6,7 @@ upstream www {
 
 server {
     listen 80;
-    server_name qr4u.online www.qr4u.online; 
+    server_name qrcodescanners.com www.qrcodescanners.com qr4u.online www.qr4u.online;
 
     location / {
         proxy_pass http://www;
